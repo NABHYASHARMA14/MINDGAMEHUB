@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mind Over Matter</title>
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      background: radial-gradient(circle, #00aaff, #0044cc);
+      color: white;
+      text-align: center;
+      margin: 0;
+      padding: 0;
+    }
+    
+    #quiz-container {
+      margin: 50px auto;
+      padding: 20px;
+      background-color: rgba(0, 0, 0, 0.8);
+      border-radius: 12px;
+      width: 80%;
+      max-width: 600px;
+      box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+    }
+    
+    h1 {
+      font-size: 3em;
+      text-shadow: 2px 2px 4px #000;
+      margin-bottom: 10px;
+    }
+    
+    .question {
+      font-size: 1.5em;
+      margin-bottom: 20px;
+    }
+    
+    .options {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+    
+    .option {
+      padding: 15px;
+      background-color: #1e90ff;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 1.2em;
+      color: white;
+      transition: transform 0.3s;
+    }
+    
+    .option:hover {
+      transform: scale(1.1);
+      background-color: #ffa500;
+    }
+    
+    .result {
+      margin-top: 30px;
+      font-size: 1.4em;
+    }
+    
+    .start-button, .next-button {
+      padding: 15px 30px;
+      background-color: #28a745;
+      border: none;
+      border-radius: 8px;
+      color: white;
+      font-size: 1.2em;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+    
+    .start-button:hover, .next-button:hover {
+      background-color: #218838;
+    }
+    
+    .hidden {
+      display: none;
+    }
+    
+    #timer {
+      font-size: 1.5em;
+      margin: 15px 0;
+    }
+  </style>
+</head>
+<body>
+
+  <div id="quiz-container" class="hidden">
+    <h1>Mind Over Matter</h1>
+    <div id="timer">Time Left: 60</div>
+    <div id="question-container">
+      <p class="question"></p>
+      <div class="options">
+        <button class="option" onclick="checkAnswer(0)">Option 1</button>
+        <button class="option" onclick="checkAnswer(1)">Option 2</button>
+        <button class="option" onclick="checkAnswer(2)">Option 3</button>
+        <button class="option" onclick="checkAnswer(3)">Option 4</button>
+      </div>
+    </div>
+    <div class="result hidden"></div>
+  </div>
+
+  <button class="start-button" onclick="startQuiz()">Start Quiz</button>
+
+  <script>
+    const quizQuestions = [
+      { question: "What is the chemical symbol for water?", options: ["H2O", "O2", "CO2", "NaCl"], answer: 0 },
+      { question: "What planet is known as the Red Planet?", options: ["Earth", "Jupiter", "Mars", "Venus"], answer: 2 },
+      { question: "Which organ produces insulin?", options: ["Liver", "Pancreas", "Kidney", "Heart"], answer: 1 },
+      { question: "What is the speed of light?", options: ["299,792 km/s", "150,000 km/s", "500,000 km/s", "1,080,000 km/s"], answer: 0 },
+      { question: "Which gas do plants absorb?", options: ["Oxygen", "Carbon Dioxide", "Nitrogen", "Helium"], answer: 1 },
+      { question: "What is the powerhouse of the cell?", options: ["Nucleus", "Ribosome", "Mitochondria", "Chloroplast"], answer: 2 },
+      { question: "What is the main gas in air?", options: ["Oxygen", "Carbon Dioxide", "Nitrogen", "Hydrogen"], answer: 2 },
+      { question: "What planet is closest to the Sun?", options: ["Venus", "Mercury", "Mars", "Earth"], answer: 1 },
+      { question: "Which element is needed for bones to grow?", options: ["Iron", "Calcium", "Magnesium", "Potassium"], answer: 1 },
+      { question: "What is the pH of pure water?", options: ["0", "7", "14", "1"], answer: 1 },
+      { question: "Which planet has the most gravity?", options: ["Mars", "Jupiter", "Earth", "Venus"], answer: 1 },
+      { question: "What is the chemical symbol for gold?", options: ["Au", "Ag", "Fe", "Pb"], answer: 0 },
+      { question: "What is the largest organ in the human body?", options: ["Heart", "Liver", "Skin", "Brain"], answer: 2 },
+      { question: "What is the atomic number of carbon?", options: ["4", "6", "12", "14"], answer: 1 },
+      { question: "How many bones are in the adult human body?", options: ["206", "205", "201", "300"], answer: 0 },
+  { question: "What is the most abundant gas in the Earth's atmosphere?", options: ["Oxygen", "Nitrogen", "Hydrogen", "Carbon Dioxide"], answer: 1 },
+  { question: "What is the distance between the Earth and the Sun?", options: ["93 million miles", "150 million miles", "250 million miles", "500 million miles"], answer: 0 },
+  { question: "Which scientist formulated the theory of evolution by natural selection?", options: ["Darwin", "Newton", "Einstein", "Galileo"], answer: 0 },
+  { question: "What is the hardest natural substance on Earth?", options: ["Gold", "Iron", "Diamond", "Silver"], answer: 2 },
+  { question: "Which planet has the largest rings?", options: ["Earth", "Mars", "Saturn", "Uranus"], answer: 2 },
+  { question: "Which part of the plant conducts photosynthesis?", options: ["Roots", "Stem", "Leaves", "Flowers"], answer: 2 },
+  { question: "What is the main source of energy for life on Earth?", options: ["The Moon", "The Sun", "Stars", "The Earth’s Core"], answer: 1 },
+  { question: "Which element is a liquid at room temperature?", options: ["Oxygen", "Mercury", "Hydrogen", "Carbon"], answer: 1 },
+  { question: "What is the most common element in the Universe?", options: ["Oxygen", "Hydrogen", "Nitrogen", "Carbon"], answer: 1 },
+  { question: "What is the largest bone in the human body?", options: ["Femur", "Tibia", "Skull", "Humerus"], answer: 0 },
+  { question: "What organ is responsible for pumping blood?", options: ["Lungs", "Brain", "Heart", "Liver"], answer: 2 },
+  { question: "Which planet is known as the Evening Star?", options: ["Mercury", "Mars", "Venus", "Jupiter"], answer: 2 },
+  { question: "Which planet is tilted on its side?", options: ["Neptune", "Saturn", "Uranus", "Mars"], answer: 2 },
+  { question: "What is the smallest unit of matter?", options: ["Atom", "Molecule", "Proton", "Electron"], answer: 0 },
+  { question: "How long does it take for the Earth to orbit the Sun?", options: ["365 days", "24 hours", "7 days", "30 days"], answer: 0 },
+  { question: "Which element is essential for the production of thyroid hormones?", options: ["Iron", "Calcium", "Iodine", "Potassium"], answer: 2 },
+  { question: "Which planet has the largest volcano?", options: ["Earth", "Venus", "Mars", "Jupiter"], answer: 2 },
+  { question: "What is the basic unit of life?", options: ["Atom", "Cell", "Tissue", "Organ"], answer: 1 },
+  { question: "Which planet has the shortest day?", options: ["Mars", "Earth", "Saturn", "Jupiter"], answer: 3 },
+  { question: "What is the atomic number of hydrogen?", options: ["1", "2", "8", "12"], answer: 0 },
+  { question: "What is the common name for sodium chloride?", options: ["Baking soda", "Table salt", "Sugar", "Vinegar"], answer: 1 },
+  { question: "What does DNA stand for?", options: ["Deoxyribonucleic Acid", "Ribonucleic Acid", "Adenosine Triphosphate", "Protein"], answer: 0 },
+  { question: "Which planet is known as the Earth's twin?", options: ["Mars", "Venus", "Jupiter", "Mercury"], answer: 1 },
+  { question: "What is the largest moon of Saturn?", options: ["Europa", "Ganymede", "Titan", "Callisto"], answer: 2 },
+  { question: "What part of the eye controls how much light enters?", options: ["Cornea", "Lens", "Retina", "Pupil"], answer: 3 },
+  { question: "Which vitamin is produced when a person is exposed to sunlight?", options: ["Vitamin C", "Vitamin B12", "Vitamin D", "Vitamin A"], answer: 2 },
+  { question: "Which organ in the human body filters blood?", options: ["Lungs", "Heart", "Kidney", "Liver"], answer: 2 },
+  { question: "What is the largest organelle in a plant cell?", options: ["Nucleus", "Chloroplast", "Vacuole", "Mitochondria"], answer: 2 },
+  { question: "What part of the brain controls balance?", options: ["Cerebrum", "Medulla", "Cerebellum", "Brainstem"], answer: 2 },
+  { question: "Which blood type is known as the universal donor?", options: ["A", "B", "AB", "O"], answer: 3 },
+  { question: "What is the hottest planet in the solar system?", options: ["Mercury", "Venus", "Earth", "Mars"], answer: 1 },
+  { question: "Which gas do humans exhale?", options: ["Oxygen", "Carbon Dioxide", "Nitrogen", "Helium"], answer: 1 },
+  { question: "What is the largest desert on Earth?", options: ["Sahara", "Antarctic", "Arabian", "Gobi"], answer: 1 },
+  { question: "Which force keeps the planets in orbit around the Sun?", options: ["Magnetic", "Electric", "Gravity", "Nuclear"], answer: 2 },
+      { question: "What type of rock is formed from lava?", options: ["Sedimentary", "Metamorphic", "Igneous", "Fossil"], answer: 2 },
+      { question: "What is the largest planet?", options: ["Saturn", "Jupiter", "Mars", "Neptune"], answer: 1 },
+      { question: "Who is known as the father of modern physics?", options: ["Newton", "Einstein", "Galileo", "Tesla"], answer: 1 },
+      { question: "What is the boiling point of water?", options: ["50°C", "100°C", "200°C", "0°C"], answer: 1 },
+      { question: "Which gas is laughing gas?", options: ["Oxygen", "Nitrous Oxide", "Hydrogen", "Carbon Dioxide"], answer: 1 },
+      { question: "What blood cells fight infection?", options: ["Red", "Platelets", "White", "Plasma"], answer: 2 },
+      { question: "What is the chemical formula of methane?", options: ["CO2", "CH4", "C2H5", "H2O"], answer: 1 },
+      
+    ];
+
+    let currentQuestion = 0;
+    let score = 0;
+    let timeLeft = 60;
+    let timerInterval;
+    let incorrectAnswers = [];
+
+    function startQuiz() {
+      document.querySelector(".start-button").classList.add("hidden");
+      document.querySelector("#quiz-container").classList.remove("hidden");
+      startTimer();
+      showQuestion();
+    }
+
+    function startTimer() {
+      const timerElement = document.getElementById("timer");
+      timerInterval = setInterval(() => {
+        timeLeft--;
+        timerElement.textContent = `Time Left: ${timeLeft}`;
+        if (timeLeft === 0) {
+          clearInterval(timerInterval);
+          showFinalResults();
+        }
+      }, 1000);
+    }
+
+    function showQuestion() {
+      const questionElement = document.querySelector(".question");
+      const options = document.querySelectorAll(".option");
+
+      const currentQuiz = quizQuestions[currentQuestion];
+      questionElement.textContent = currentQuiz.question;
+
+      options.forEach((option, index) => {
+        option.textContent = currentQuiz.options[index];
+        option.classList.remove("disabled");
+      });
+    }
+
+    function checkAnswer(selectedOption) {
+      const currentQuiz = quizQuestions[currentQuestion];
+      if (selectedOption === currentQuiz.answer) {
+        score++;
+      } else {
+        incorrectAnswers.push({
+          question: currentQuiz.question,
+          correctAnswer: currentQuiz.options[currentQuiz.answer],
+        });
+      }
+
+      currentQuestion++;
+      if (currentQuestion < quizQuestions.length && timeLeft > 0) {
+        showQuestion();
+      } else if (timeLeft > 0) {
+        showFinalResults();
+      }
+    }
+
+    function showFinalResults() {
+      clearInterval(timerInterval);
+      const quizContainer = document.querySelector("#quiz-container");
+      let resultHTML = `<h1>Quiz Completed!</h1>`;
+      resultHTML += `<p>Your score: ${score}/${quizQuestions.length}</p>`;
+      
+      if (incorrectAnswers.length > 0) {
+        resultHTML += `<h2>Correct Answers for the Questions you got Wrong:</h2>`;
+        incorrectAnswers.forEach(item => {
+          resultHTML += `<p>Q: ${item.question} <br>Correct Answer: ${item.correctAnswer}</p>`;
+        });
+      }
+      
+      document.querySelector(".result").innerHTML = resultHTML;
+      document.querySelector(".result").classList.remove("hidden");
+    }
+  </script>
+</body>
+</html>
